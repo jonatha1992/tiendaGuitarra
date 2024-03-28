@@ -1,9 +1,24 @@
-import { useMemo } from "react";
+import { CartItem } from "../types/Index";
 
-export default function Header({ cart, removeToCart, incrementQuantity, decrementQuantity, clearCart }) {
-    const total = useMemo(() => cart.reduce((total, guitar) => total + guitar.price * guitar.quantity, 0), [cart]);
-    const isEmpty = useMemo(() => cart.length === 0, [cart]);
+type HeaderProps = {
+    isEmpty: boolean;
+    total: number;
+    cart: CartItem[];
+    removeToCart: (guitar: CartItem) => void;
+    incrementQuantity: (cardItem: CartItem) => void;
+    decrementQuantity: (cardItem: CartItem) => void;
+    clearCart: () => void;
+};
 
+export default function Header({
+    isEmpty,
+    total,
+    cart,
+    removeToCart,
+    incrementQuantity,
+    decrementQuantity,
+    clearCart,
+}: HeaderProps) {
     return (
         <header className="py-5 header">
             <div className="container-xl">
