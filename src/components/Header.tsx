@@ -1,24 +1,16 @@
+import { Dispatch, useMemo } from "react";
 import { CartItem } from "../types/Index";
+import { CartActions } from "../reducers/cart-reducer";
 
 type HeaderProps = {
-    isEmpty: boolean;
-    total: number;
     cart: CartItem[];
-    removeToCart: (guitar: CartItem) => void;
-    incrementQuantity: (cardItem: CartItem) => void;
-    decrementQuantity: (cardItem: CartItem) => void;
-    clearCart: () => void;
+    dispatch: Dispatch<CartActions>;
 };
 
-export default function Header({
-    isEmpty,
-    total,
-    cart,
-    removeToCart,
-    incrementQuantity,
-    decrementQuantity,
-    clearCart,
-}: HeaderProps) {
+export default function Header({ cart, dispatch }: HeaderProps) {
+    const total = useMemo(() => cart.reduce((total, guitar) => total + guitar.price * guitar.quantity, 0), [cart]);
+    const isEmpty = useMemo(() => cart.length === 0, [cart]);
+
     return (
         <header className="py-5 header">
             <div className="container-xl">
@@ -47,30 +39,40 @@ export default function Header({
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {cart.map((guitar) => (
-                                                    <tr key={guitar.id}>
+                                                {cart.map((cardItem) => (
+                                                    <tr key={cardItem.id}>
                                                         <td>
                                                             <img
                                                                 className="img-fluid"
-                                                                src={`./public/img/${guitar.image}.jpg`}
+                                                                src={`./public/img/${cardItem.image}.jpg`}
                                                                 alt="imagen guitarra"
                                                             />
                                                         </td>
-                                                        <td>{guitar.name}</td>
-                                                        <td className="fw-bold">${guitar.price}</td>
+                                                        <td>{cardItem.name}</td>
+                                                        <td className="fw-bold">${cardItem.price}</td>
                                                         <td className="flex align-items-start gap-4">
                                                             <button
                                                                 type="button"
                                                                 className="btn btn-dark"
-                                                                onClick={() => decrementQuantity(guitar)}
+                                                                onClick={() =>
+                                                                    dispatch({
+                                                                        type: "decrement-quantity",
+                                                                        payload: cardItem,
+                                                                    })
+                                                                }
                                                             >
                                                                 -
                                                             </button>
-                                                            {guitar.quantity}
+                                                            {cardItem.quantity}
                                                             <button
                                                                 type="button"
                                                                 className="btn btn-dark"
-                                                                onClick={() => incrementQuantity(guitar)}
+                                                                onClick={() =>
+                                                                    dispatch({
+                                                                        type: "increment-quantity",
+                                                                        payload: cardItem,
+                                                                    })
+                                                                }
                                                             >
                                                                 +
                                                             </button>
@@ -79,7 +81,12 @@ export default function Header({
                                                             <button
                                                                 className="btn btn-danger"
                                                                 type="button"
-                                                                onClick={() => removeToCart(guitar)}
+                                                                onClick={() =>
+                                                                    dispatch({
+                                                                        type: "remove-to-cart",
+                                                                        payload: cardItem,
+                                                                    })
+                                                                }
                                                             >
                                                                 X
                                                             </button>
@@ -92,7 +99,10 @@ export default function Header({
                                         <p className="text-end">
                                             Total pagar: <span className="fw-bold">${total}</span>
                                         </p>
-                                        <button className="btn btn-dark w-100 mt-3 p-2" onClick={clearCart}>
+                                        <button
+                                            className="btn btn-dark w-100 mt-3 p-2"
+                                            onClick={() => dispatch({ type: "clear-cart" })}
+                                        >
                                             Vaciar Carrito
                                         </button>
                                     </>

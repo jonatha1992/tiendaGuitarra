@@ -63,6 +63,7 @@ const useCart = () => {
 
     const total = useMemo(() => cart.reduce((total, guitar) => total + guitar.price * guitar.quantity, 0), [cart]);
     const isEmpty = useMemo(() => cart.length === 0, [cart]);
+
     return {
         data,
         cart,
