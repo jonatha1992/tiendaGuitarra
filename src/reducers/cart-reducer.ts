@@ -13,8 +13,15 @@ export type CartActions =
     | { type: "clear-cart" };
 
 const initialCart = (): CartItem[] => {
-    const localStorageCart = localStorage.getItem("cart");
-    return localStorageCart ? JSON.parse(localStorageCart) : [];
+    try {
+        const localStorageCart = localStorage.getItem("cart");
+        if (!localStorageCart) return [];
+        const parsed = JSON.parse(localStorageCart);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (err) {
+        console.error("Error al leer cart de localStorage:", err);
+        return [];
+    }
 };
 export const initialState: CartState = {
     data: db,
